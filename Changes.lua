@@ -1,4 +1,89 @@
 local changes = {
+	["r725"] = {
+		additions = {
+			"Added a new option for toggling the scrolling debug window to Blizzard's keybinding UI",
+			"Added tracking for Arfus (Hallow's End 2023 update)",
+		},
+		fixes = {
+			"Fixed an issue that would cause the achievement-style popup to always be shown when looting a class-specific item",
+			"Duplicate attempts should no longer be added when using Engineering on Arachnoid Harvester",
+			"Fixed tracking for The Horseman's Reins (Hallow's End 2023 update)",
+		},
+		contributors = { "Alexander Stavitsky (astavitsky)" },
+	},
+	["r724"] = {
+		additions = {
+			"Added tracking for Emmah (Disgusting Vat Fishing, in Zskera Vaults)",
+			"Added a new scrolling message frame for inspecting cached debug messages (via `/rarity dump)`",
+		},
+		fixes = {
+			"Fixed an issue that could cause pets that have already been obtained to not be detected as such",
+		},
+		contributors = { "cyriun" },
+	},
+	["r723"] = {
+		additions = {
+			"Added tracking for Darkmoon Rabbit",
+		},
+		fixes = {
+			"Fixed an issue that prevented items requiring world events (e.g., DMF) to be active from being displayed",
+		},
+	},
+	["r722"] = {
+		additions = {
+			"Added tracking for collectibles obtainable in the Zskera Vaults (Forbidden Reach)",
+		},
+		changes = {
+			"The estimated luckiness percentage is now being displayed alongside the attempts count for all items",
+		},
+		fixes = {
+			"Fixed an issue that would incorrectly add duplicate attempts for bosses with both kill statistics and NPC loot",
+			"Rolled back a recent change that caused NPC loot to not be registered when using Rarity with fast-loot addons",
+		},
+		contributors = { "cyriun", "Rubio9" },
+	},
+	["r721"] = {
+		fixes = {
+			"Fixed an issue that would incorrectly add attempts to faction-specific Time Rift mounts for the opposing faction",
+			"Fixed an issue that would break tracking of container items after the mail box was opened",
+		},
+		contributors = { "Rubio9" },
+	},
+	["r720"] = {
+		additions = {
+			"Added tracking for most of the missing Dragonflight collectibles",
+			"Added an experimental button that allows untracking all mounts to the Advanced settings",
+			"Opening BFA Island Expedition crates should now add attempts for all relevant collectibles",
+		},
+		fixes = { "Fixed TomTom waypoint labels not displaying Rarity as their source" },
+		contributors = { "cyriun" },
+	},
+	["r719"] = {
+		additions = {
+			"Created a slash command for toggling the progress bar (for use in macros)",
+			"Added tracking for many Dragonflight collectibles (the list is still incomplete, however)",
+		},
+		fixes = { "Fixed script errors caused by various WOW API changes" },
+		notes = {
+			"Many Dragonflight collectibles, especially pets and toys, are still missing."
+				.. " Please report any that you think should be tracked, but currently aren't.",
+		},
+		contributors = { "cyriun", "Elke Freed", "Tommy Godejord" },
+	},
+	["r718"] = {
+		fixes = { "Fixed script errors caused by API changes in patch 10.0.2" },
+	},
+	["r717"] = {
+		fixes = { "Fixed script errors caused by API changes in patch 10.0" },
+		changes = { "Tooltip additions should now also work for items in the quest log" },
+		contributors = { "Patrick Borgogno", "Tommy Godejord", "teelolws" },
+	},
+	["r716"] = {
+		additions = { "Added defeat detection data for Mythic-difficulty Legion raids" },
+		fixes = {
+			"Added several missing Torghast bosses to the list of NPCs counting for Sturdy Silver Mawrat Harness",
+		},
+	},
 	["r715"] = {
 		additions = { "Added tracking for various collectibles obtained in Zereth Mortis" },
 		fixes = { "Fixed the attempts detection for Skull of Corruption" },
@@ -10,7 +95,9 @@ local changes = {
 			"Added tracking for Shaded Judgement Stone (Korthia/The Maw)",
 			"Added tracking for the various 'dice' toys obtainable only via pickpocketing",
 		},
-		changes = { "Adjusted the drop rate of several Shadowlands collectibles to more accurately reflect wowhead's data" },
+		changes = {
+			"Adjusted the drop rate of several Shadowlands collectibles to more accurately reflect wowhead's data",
+		},
 		fixes = {
 			"Attempts for the Infinite Timereaver mount should now correctly be detected in the recently-added Timewalking dungeons",
 			"Collectibles that require being affiliated with a different covenant should now correctly be marked as 'unavailable' in the addon's main window",
@@ -251,7 +338,9 @@ local changes = {
 		},
 	},
 	["r693"] = {
-		fixes = { "Fixed integration with the TradeSkillMaster4 addon (used to display pricing info in Rarity's tooltip)" },
+		fixes = {
+			"Fixed integration with the TradeSkillMaster4 addon (used to display pricing info in Rarity's tooltip)",
+		},
 	},
 	["r692"] = {
 		additions = { "Added defeat detection for all relevant rares in Nazjatar and Mechagon Island" },
@@ -319,7 +408,9 @@ local changes = {
 		},
 	},
 	["r684"] = {
-		additions = { "Added tracking for collectibles that can be obtained in the Battle of Dazar'alor raid (experimental)" },
+		additions = {
+			"Added tracking for collectibles that can be obtained in the Battle of Dazar'alor raid (experimental)",
+		},
 		fixes = {
 			"Fishing from pools in Skettis (Draenor) should no longer incorrectly add attempts for Mr. Pinchy",
 			"Attempts for the Everburning Treant pet should now be properly tracked for players of both factions",
@@ -362,7 +453,7 @@ local changes = {
 			"Added tracking for both toys obtainable from the Arathi Highlands world bosses (Doom's Howl and The Lion's Roar)",
 		},
 		changes = {
-			"Existing mounts that are dropped by rares in the Arathi Highlands are now listed under the \"Groups\" category if defeating said rare tends to require a group",
+			'Existing mounts that are dropped by rares in the Arathi Highlands are now listed under the "Groups" category if defeating said rare tends to require a group',
 		},
 		fixes = {
 			"Luckiness calculation for the mounts dropped by rares in the Arathi Highlands now correctly assumed Personal Loot",
@@ -384,7 +475,9 @@ local changes = {
 			"Added tracking for all collectibles obtainable from Island Expeditions (see notes below)",
 			"Added item: Viable Cobra Egg (Drop: Merektha)",
 		},
-		changes = { "Reverted a minor cosmetic change to the addon's output that had harmless, but unintended, side effects" },
+		changes = {
+			"Reverted a minor cosmetic change to the addon's output that had harmless, but unintended, side effects",
+		},
 		fixes = {
 			"Looting Nok-Karosh should no longer count attempts for the Eye of Observation pet (which is a drop from Orumo the Observer)",
 		},
@@ -416,23 +509,25 @@ local changes = {
 	},
 	["r675"] = {
 		additions = {
-			"Added tooltip for the \"Adventurer of ...\" exploration achievements to all relevant rares in Kul'tiras and Zandalar",
+			'Added tooltip for the "Adventurer of ..." exploration achievements to all relevant rares in Kul\'tiras and Zandalar',
 		},
 		fixes = { "Fixed tracking for Stormforged Rune (Drop: The Assembly of Iron)" },
 	},
 	["r674"] = {
-		additions = { "Added tooltip for the \"Commander of Argus\" achievement to all relevant rares on Argus" },
+		additions = { 'Added tooltip for the "Commander of Argus" achievement to all relevant rares on Argus' },
 		fixes = { "Fixed tooltip display for Fossorial Bile Larva (Profession: Skinning)" },
 	},
 	["r673"] = {
 		changes = { "Installing the addon without embedded libraries is no longer possible" },
 		notes = {
-			"This Curse/Twitch \"feature\" caused many bug reports and offers little tangible benefit, as it was often done in error or automatically by the Twitch client. I ultimately chose to disable it in order to reduce the time spent on providing support instead of working on bug fixes or new features",
+			'This Curse/Twitch "feature" caused many bug reports and offers little tangible benefit, as it was often done in error or automatically by the Twitch client. I ultimately chose to disable it in order to reduce the time spent on providing support instead of working on bug fixes or new features',
 		},
 	},
 	["r672"] = {
 		additions = { "Added pet: Fel Lasher", "Added pet: Fossorial Bile Larva" },
-		fixes = { "Fixed detection for various 8.0.1 gathering (and fishing) spells that had not already been supported" },
+		fixes = {
+			"Fixed detection for various 8.0.1 gathering (and fishing) spells that had not already been supported",
+		},
 	},
 	["r671"] = { changes = { "Minor cosmetic changes to the addon's output" } },
 	["r670"] = {

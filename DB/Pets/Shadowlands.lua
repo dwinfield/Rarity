@@ -408,9 +408,7 @@ local shadowlandsPets = {
 		tooltipNpcs = { 164267 },
 		statisticId = { 14398 },
 		chance = 100,
-		equalOdds = true,
 		instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.MYTHIC_DUNGEON] = true },
-		groupSize = 5,
 		coords = { { m = CONSTANTS.UIMAPIDS.PLAGUEFALL } },
 	},
 	["Vial of Roiling Emotions"] = {
@@ -424,9 +422,7 @@ local shadowlandsPets = {
 		npcs = { 162102 },
 		-- tooltipNpcs = { 162102 }, -- Not needed if using NPC instead of BOSS
 		chance = 100,
-		equalOdds = true,
 		instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.MYTHIC_DUNGEON] = true },
-		groupSize = 5,
 		coords = { { m = CONSTANTS.UIMAPIDS.SANGUINE_DEPTHS } },
 	},
 	["Spinemaw Gormling"] = {
@@ -441,9 +437,7 @@ local shadowlandsPets = {
 		tooltipNpcs = { 164517 },
 		statisticId = { 14395 },
 		chance = 100,
-		equalOdds = true,
 		instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.MYTHIC_DUNGEON] = true },
-		groupSize = 5,
 		coords = { { m = CONSTANTS.UIMAPIDS.MISTS_OF_TIRNA_SCITHE } },
 	},
 	["Skittering Venomspitter"] = {
@@ -582,7 +576,10 @@ local shadowlandsPets = {
 				encounterName = "Sire Denathrius",
 				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.NORMAL_RAID] = true },
 			},
-			{ encounterName = "Sire Denathrius", instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.LFR] = true } },
+			{
+				encounterName = "Sire Denathrius",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.LFR] = true },
+			},
 		},
 		coords = { { m = CONSTANTS.UIMAPIDS.CASTLE_NATHRIA, i = true } },
 	},
@@ -656,7 +653,10 @@ local shadowlandsPets = {
 				encounterName = "Eye of the Jailer",
 				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.NORMAL_RAID] = true },
 			},
-			{ encounterName = "Eye of the Jailer", instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.LFR] = true } },
+			{
+				encounterName = "Eye of the Jailer",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.LFR] = true },
+			},
 		},
 		coords = { { m = CONSTANTS.UIMAPIDS.SANCTUM_OF_DOMINATION, i = true } },
 	},
@@ -694,7 +694,10 @@ local shadowlandsPets = {
 				encounterName = "Soulrender Dormazain",
 				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.NORMAL_RAID] = true },
 			},
-			{ encounterName = "Soulrender Dormazain", instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.LFR] = true } },
+			{
+				encounterName = "Soulrender Dormazain",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.LFR] = true },
+			},
 		},
 		coords = { { m = CONSTANTS.UIMAPIDS.SANCTUM_OF_DOMINATION, i = true } },
 	},
@@ -720,9 +723,18 @@ local shadowlandsPets = {
 		},
 		lockoutDetails = {
 			mode = CONSTANTS.DEFEAT_DETECTION.MODE_AND,
-			{ encounterName = "Kel'Thuzad", instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.MYTHIC_RAID] = true } },
-			{ encounterName = "Kel'Thuzad", instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.HEROIC_RAID] = true } },
-			{ encounterName = "Kel'Thuzad", instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.NORMAL_RAID] = true } },
+			{
+				encounterName = "Kel'Thuzad",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.MYTHIC_RAID] = true },
+			},
+			{
+				encounterName = "Kel'Thuzad",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.HEROIC_RAID] = true },
+			},
+			{
+				encounterName = "Kel'Thuzad",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.NORMAL_RAID] = true },
+			},
 			{ encounterName = "Kel'Thuzad", instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.LFR] = true } },
 		},
 		coords = { { m = CONSTANTS.UIMAPIDS.SANCTUM_OF_DOMINATION, i = true } },

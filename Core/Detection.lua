@@ -6,9 +6,9 @@ local table = table
 
 -- WOW API
 local C_Calendar = C_Calendar
-local GetContainerNumSlots = GetContainerNumSlots
-local GetContainerItemID = GetContainerItemID
-local GetContainerItemInfo = GetContainerItemInfo
+local GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
+local GetContainerItemID = _G.C_Container.GetContainerItemID
+local GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
 local GetNumSavedInstances = GetNumSavedInstances
 local GetSavedInstanceInfo = GetSavedInstanceInfo
 local GetNumRandomDungeons = GetNumRandomDungeons
@@ -40,7 +40,8 @@ function R:ScanBags()
 			for ii = 1, numSlots do
 				local id = GetContainerItemID(i, ii)
 				if id then
-					local qty = select(2, GetContainerItemInfo(i, ii))
+					local containerItemInfo = GetContainerItemInfo(i, ii)
+					local qty = containerItemInfo.stackCount
 					if qty and qty > 0 then
 						if not Rarity.bagitems[id] then
 							Rarity.bagitems[id] = 0
@@ -84,7 +85,7 @@ function R:ScanInstanceLocks(reason)
 	local savedInstances = GetNumSavedInstances()
 	for i = 1, savedInstances do
 		local instanceName, instanceID, instanceReset, instanceDifficulty, locked, extended, instanceIDMostSig =
-				GetSavedInstanceInfo(i)
+			GetSavedInstanceInfo(i)
 
 		-- Legacy code (deprecated)
 		if instanceReset > 0 then
@@ -112,8 +113,8 @@ function R:ScanInstanceLocks(reason)
 						self.lockouts[encounterName] = true
 						-- Create containers if this is the first lockout for a given instance
 						self.lockouts_detailed[encounterName] = self.lockouts_detailed[encounterName] or {}
-						self.lockouts_detailed[encounterName][instanceDifficulty] =
-								self.lockouts_detailed[encounterName][instanceDifficulty] or {}
+						self.lockouts_detailed[encounterName][instanceDifficulty] = self.lockouts_detailed[encounterName][instanceDifficulty]
+							or {}
 						-- Add this lockout to the container
 						self.lockouts_detailed[encounterName][instanceDifficulty] = true
 					end
@@ -193,8 +194,11 @@ function R:ScanStatistics(reason)
 
 	for kk, vv in pairs(Rarity.items_with_stats) do
 		if type(vv) == "table" then
-			if (vv.requiresHorde and R.Caching:IsHorde()) or (vv.requiresAlliance and not R.Caching:IsHorde()) or
-					(not vv.requiresHorde and not vv.requiresAlliance) then
+			if
+				(vv.requiresHorde and R.Caching:IsHorde())
+				or (vv.requiresAlliance and not R.Caching:IsHorde())
+				or (not vv.requiresHorde and not vv.requiresAlliance)
+			then
 				if vv.statisticId and type(vv.statisticId) == "table" then
 					local count = 0
 					local totalCrossAccount = 0
@@ -208,8 +212,8 @@ function R:ScanStatistics(reason)
 						if Rarity.db.profile.accountWideStatistics then
 							for playerGuid, playerData in pairs(Rarity.db.profile.accountWideStatistics) do
 								if playerData.statistics then
-									totalCrossAccount = totalCrossAccount +
-											                    (Rarity.db.profile.accountWideStatistics[playerGuid].statistics[vvv] or 0)
+									totalCrossAccount = totalCrossAccount
+										+ (Rarity.db.profile.accountWideStatistics[playerGuid].statistics[vvv] or 0)
 								end
 							end
 						end
@@ -228,15 +232,21 @@ function R:ScanStatistics(reason)
 						vv.attempts = count
 						self:OutputAttempts(vv, true)
 					elseif count > 0 and count > (vv.attempts or 0) and vv.doNotUpdateToHighestStat ~= true then -- Some items don't want us doing this (generally when Blizzard has a statistic overcounting bug)
-						R:Debug("Statistics for " .. vv.name .. " are higher than current amount. Updating to " .. count)
+						R:Debug(
+							"Statistics for " .. vv.name .. " are higher than current amount. Updating to " .. count
+						)
 						vv.attempts = count
 						self:OutputAttempts(vv, true)
 					end
 
 					-- Cross-account statistic total is higher than the one we have; update to new total
 					if totalCrossAccount > (vv.attempts or 0) and vv.doNotUpdateToHighestStat ~= true then
-						R:Debug("Account-wide statistics for " .. vv.name .. " are higher than current amount. Updating to " ..
-								        totalCrossAccount)
+						R:Debug(
+							"Account-wide statistics for "
+								.. vv.name
+								.. " are higher than current amount. Updating to "
+								.. totalCrossAccount
+						)
 						vv.attempts = totalCrossAccount
 						self:OutputAttempts(vv, true)
 					end

@@ -5,7 +5,6 @@ local CONSTANTS = addonTable.constants
 
 local legionMounts = {
 	-- 7.0
-	-- ["Brinedeep Bottom-Feeder"] =                       { cat = CONSTANTS.ITEM_CATEGORIES.LEGION, type = CONSTANTS.ITEM_TYPES.MOUNT, method = CONSTANTS.DETECTION_METHODS.COLLECTION, name = L["Brinedeep Bottom-Feeder"], spellId = 214791, itemId = 138811, collectedItemId = { 138777, }, chance = 100, },
 	["Cloudwing Hippogryph"] = {
 		cat = CONSTANTS.ITEM_CATEGORIES.LEGION,
 		type = CONSTANTS.ITEM_TYPES.MOUNT,
@@ -152,8 +151,11 @@ local legionMounts = {
 		questId = { 48809, 48810 },
 		defeatAllQuests = true,
 		defeatSteps = { [48809] = L["Puscilla"], [48810] = L["Vrax'thul"] },
-		sourceText = format(L["Has a chance to drop from either %s or %s on Argus. Each can be looted once per day."],
-		                    L["Puscilla"], L["Vrax'thul"]),
+		sourceText = format(
+			L["Has a chance to drop from either %s or %s on Argus. Each can be looted once per day."],
+			L["Puscilla"],
+			L["Vrax'thul"]
+		),
 		coords = {
 			{ m = CONSTANTS.UIMAPIDS.ANTORAN_WASTES, x = 64.42, y = 20.35, q = 48809, n = L["Puscilla"] },
 			{ m = CONSTANTS.UIMAPIDS.ANTORAN_WASTES, x = 53.06, y = 36.12, q = 48810, n = L["Vrax'thul"] },
@@ -323,11 +325,27 @@ local legionMounts = {
 		tooltipNpcs = {
 			105503,
 			104154, -- Gul'dan (normal)
+			111022, -- The Demon Within (Mythic only)
 		},
 		chance = 100,
 		blackMarket = true,
 		statisticId = { 10979, 10980, 10978 },
 		coords = { { m = 772, i = true } },
+		lockoutDetails = {
+			mode = CONSTANTS.DEFEAT_DETECTION.MODE_AND,
+			{
+				encounterName = "Gul'dan",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.NORMAL_RAID] = true },
+			},
+			{
+				encounterName = "Gul'dan",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.HEROIC_RAID] = true },
+			},
+			{
+				encounterName = "Gul'dan",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.MYTHIC_RAID] = true },
+			},
+		},
 	},
 	["Midnight's Eternal Reins"] = {
 		cat = CONSTANTS.ITEM_CATEGORIES.LEGION,
@@ -356,7 +374,14 @@ local legionMounts = {
 		chance = 100,
 		wasGuaranteed = true,
 		statisticId = { 10980 },
-		coords = { { m = 772, i = true } },
+		coords = { { m = CONSTANTS.UIMAPIDS.THE_NIGHTHOLD, i = true } },
+		lockoutDetails = {
+			mode = CONSTANTS.DEFEAT_DETECTION.MODE_AND,
+			{
+				encounterName = "Gul'dan",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.MYTHIC_RAID] = true },
+			},
+		},
 	},
 	["Antoran Charhound"] = {
 		cat = CONSTANTS.ITEM_CATEGORIES.LEGION,
@@ -385,7 +410,14 @@ local legionMounts = {
 		wasGuaranteed = true,
 		blackMarket = true,
 		statisticId = { 11986 },
-		coords = { { m = 910, i = true } },
+		coords = { { m = CONSTANTS.UIMAPIDS.ANTORUS, i = true } },
+		lockoutDetails = {
+			mode = CONSTANTS.DEFEAT_DETECTION.MODE_AND,
+			{
+				encounterName = "Argus the Unmaker",
+				instanceDifficulties = { [CONSTANTS.INSTANCE_DIFFICULTIES.MYTHIC_RAID] = true },
+			},
+		},
 	},
 }
 

@@ -98,9 +98,9 @@ local GetItemInfo = function(id)
 	return R:GetItemInfo(id)
 end
 local GetRealZoneText = _G.GetRealZoneText
-local GetContainerNumSlots = _G.GetContainerNumSlots
-local GetContainerItemID = _G.GetContainerItemID
-local GetContainerItemInfo = _G.GetContainerItemInfo
+local GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
+local GetContainerItemID = _G.C_Container.GetContainerItemID
+local GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
 local GetNumArchaeologyRaces = _G.GetNumArchaeologyRaces
 local GetArchaeologyRaceInfo = _G.GetArchaeologyRaceInfo
 local GetStatistic = _G.GetStatistic
@@ -139,8 +139,7 @@ local GetMapNameByID = Rarity.MapInfo.GetMapNameByID
 --[[
       LIFECYCLE ----------------------------------------------------------------------------------------------------------------
   ]]
-function R:OnInitialize()
-end
+function R:OnInitialize() end
 
 local Output = Rarity.Output
 
@@ -164,6 +163,10 @@ do
 
 		self:RegisterChatCommand("rarity", "OnChatCommand")
 		self:RegisterChatCommand("rare", "OnChatCommand")
+
+		-- Register keybind(s): These must match the info from Bindings.xml (and use localized descriptions)
+		_G.BINDING_HEADER_Rarity = "Rarity"
+		_G.BINDING_NAME_RARITY_DEBUGWINDOWTOGGLE = L["Toggle Debug Window"]
 
 		Rarity.GUI:RegisterDataBroker()
 
@@ -198,7 +201,7 @@ do
 		self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
 		self.db.RegisterCallback(self, "OnProfileDeleted", "OnProfileChanged")
 
-		RequestArtifactCompletionHistory() -- Request archaeology info from the server
+		self:ScanAllArch("DoEnable")
 		RequestRaidInfo() -- Request raid lock info from the server
 		RequestLFDPlayerLockInfo() -- Request LFD data from the server; this is used for holiday boss detection
 		C_Calendar.OpenCalendar() -- Request calendar info from the server
@@ -452,7 +455,8 @@ function R:GetDistanceToItem(item)
 				local y = (v.y or 50) / 100
 				local itemWorldX, itemWorldY = hbd:GetWorldCoordinatesFromZone(x, y, map, v.f or 1)
 				if itemWorldX ~= nil then -- Library returns nil for instances
-					local thisDistance = hbd:GetWorldDistance(instance, itemWorldX, itemWorldY, playerWorldX, playerWorldY)
+					local thisDistance =
+						hbd:GetWorldDistance(instance, itemWorldX, itemWorldY, playerWorldX, playerWorldY)
 					-- R:Print("map: "..map..", x: "..x..", y: "..y..", itemWorldX: "..itemWorldX..", itemWorldY: "..itemWorldY..", playerWorldX: "..playerWorldX..", playerWorldY: "..playerWorldY..", thisDistance: "..thisDistance)
 					if thisDistance < distance then
 						distance = thisDistance
@@ -584,9 +588,13 @@ function R:UpdateInterestingThings()
 					if vv.tooltipNpcs and type(vv.tooltipNpcs) == "table" then -- Item has tooltipNpcs -> Check if they should be displayed
 						local showTooltipNpcs = true -- If no filters exist, always show the tooltip for relevant NPCs
 
-						if vv.showTooltipCondition and type(vv.showTooltipCondition) == "table" and -- This item has filter conditions to help decide when the tooltipNpcs should be added
-						vv.showTooltipCondition.filter and type(vv.showTooltipCondition.filter) == "function" and
-								vv.showTooltipCondition.value then -- Filter has the correct format and can be applied -- Check filter conditions to see if tooltipNpcs should be added
+						if
+							vv.showTooltipCondition
+							and type(vv.showTooltipCondition) == "table" -- This item has filter conditions to help decide when the tooltipNpcs should be added
+							and vv.showTooltipCondition.filter
+							and type(vv.showTooltipCondition.filter) == "function"
+							and vv.showTooltipCondition.value
+						then -- Filter has the correct format and can be applied -- Check filter conditions to see if tooltipNpcs should be added
 							showTooltipNpcs = false -- Hide the additional tooltip info by default (filters will overwrite this if they can find a match, below)
 
 							-- Each filter requires separate handling here
@@ -609,10 +617,19 @@ function R:UpdateInterestingThings()
 						-- This has to run last, as it is intended to update things on the fly where a filter isn't sufficient
 						local tooltipModifier = vv.tooltipModifier
 
-						if tooltipModifier ~= nil and type(tooltipModifier) == "table" and tooltipModifier.condition ~= nil and
-								tooltipModifier.value ~= nil then -- Apply modifications where necessary
-							local shouldApplyModification = type(tooltipModifier.condition) == "function" and tooltipModifier.condition()
-							if shouldApplyModification and tooltipModifier.action and type(tooltipModifier.action) == "function" then -- Apply this action to the entry
+						if
+							tooltipModifier ~= nil
+							and type(tooltipModifier) == "table"
+							and tooltipModifier.condition ~= nil
+							and tooltipModifier.value ~= nil
+						then -- Apply modifications where necessary
+							local shouldApplyModification = type(tooltipModifier.condition) == "function"
+								and tooltipModifier.condition()
+							if
+								shouldApplyModification
+								and tooltipModifier.action
+								and type(tooltipModifier.action) == "function"
+							then -- Apply this action to the entry
 								vv = tooltipModifier.action(vv, tooltipModifier.value) -- A tooltip modifier always returns the (modified) database entry to keep processing separate
 							end
 						end
@@ -651,12 +668,15 @@ function R:IsAttemptAllowed(item)
 	end
 
 	-- Check disabled classes
-	local playerClass = Rarity.Caching:GetPlayerClass() -- Why is this cached in the first place?
-	if not playerClass then
-		Rarity.Caching:SetPlayerClass(select(2, UnitClass("player")))
-	end
-	if item.disableForClass and type(item.disableForClass) == "table" and item.disableForClass[playerClass] == true then
+	local playerClass = select(2, UnitClass("player"))
+	if item.disableForClass and item.disableForClass[playerClass] then
 		Rarity:Debug(format("Attempts for item %s are disallowed (disabled for class %s)", item.name, playerClass))
+		return false
+	end
+
+	local dungeonID = select(10, GetInstanceInfo())
+	if dungeonID and item.requiredDungeons and not item.requiredDungeons[dungeonID] then
+		Rarity:Debug(format("Attempts for item %s are disallowed (not a required dungeon: %d)", item.name, dungeonID))
 		return false
 	end
 
@@ -666,16 +686,27 @@ function R:IsAttemptAllowed(item)
 		local requiredCovenantData = C_Covenants.GetCovenantData(item.requiredCovenantID)
 
 		if not activeCovenantData then
-			Rarity:Debug(format(
-					             "Attempts for item %s are disallowed (Covenant %d/%s is required, but none is currently active)",
-					             item.name, item.requiredCovenantID, requiredCovenantData.name))
+			Rarity:Debug(
+				format(
+					"Attempts for item %s are disallowed (Covenant %d/%s is required, but none is currently active)",
+					item.name,
+					item.requiredCovenantID,
+					requiredCovenantData.name
+				)
+			)
 			return false
 		end
 
-		Rarity:Debug(format(
-				             "Attempts for item %s are disallowed (Covenant %d/%s is required, but active covenant is %d/%s)",
-				             item.name, item.requiredCovenantID, requiredCovenantData.name, activeCovenantID,
-				             activeCovenantData.name))
+		Rarity:Debug(
+			format(
+				"Attempts for item %s are disallowed (Covenant %d/%s is required, but active covenant is %d/%s)",
+				item.name,
+				item.requiredCovenantID,
+				requiredCovenantData.name,
+				activeCovenantID,
+				activeCovenantData.name
+			)
+		)
 		return false
 	end
 
@@ -689,8 +720,11 @@ function R:IsAttemptAllowed(item)
 	end
 
 	-- No valid instance difficulty configuration; allow (this needs to be the second-to-last check)
-	if item.instanceDifficulties == nil or type(item.instanceDifficulties) ~= "table" or next(item.instanceDifficulties) ==
-			nil then
+	if
+		item.instanceDifficulties == nil
+		or type(item.instanceDifficulties) ~= "table"
+		or next(item.instanceDifficulties) == nil
+	then
 		return true
 	end
 
@@ -704,8 +738,8 @@ function R:IsAttemptAllowed(item)
 	if foundTrue == false then
 		return true
 	end
-	local name, type, difficulty, difficultyName, maxPlayers, playerDifficulty, isDynamicInstance, mapID,
-	      instanceGroupSize = GetInstanceInfo()
+	local name, type, difficulty, difficultyName, maxPlayers, playerDifficulty, isDynamicInstance, mapID, instanceGroupSize =
+		GetInstanceInfo()
 	if item.instanceDifficulties[difficulty] and item.instanceDifficulties[difficulty] == true then
 		return true
 	end
@@ -727,10 +761,16 @@ function R:CheckNpcInterest(guid, zone, subzone, zone_t, subzone_t, curSpell, re
 	if npcs[npcid] == nil then -- Not an NPC we need, abort
 		self:Debug("NPC ID not on the list of needed NPCs: " .. (npcid or "nil"))
 
-		if Rarity.zones[tostring(GetBestMapForUnit("player"))] == nil and Rarity.zones[zone] == nil and
-				Rarity.zones[lbz[zone] or "."] == nil and Rarity.zones[lbsz[subzone] or "."] == nil and Rarity.zones[zone_t] ==
-				nil and Rarity.zones[subzone_t] == nil and Rarity.zones[lbz[zone_t] or "."] == nil and
-				Rarity.zones[lbsz[subzone_t] or "."] == nil then -- Not a zone we need, abort
+		if
+			Rarity.zones[tostring(GetBestMapForUnit("player"))] == nil
+			and Rarity.zones[zone] == nil
+			and Rarity.zones[lbz[zone] or "."] == nil
+			and Rarity.zones[lbsz[subzone] or "."] == nil
+			and Rarity.zones[zone_t] == nil
+			and Rarity.zones[subzone_t] == nil
+			and Rarity.zones[lbz[zone_t] or "."] == nil
+			and Rarity.zones[lbsz[subzone_t] or "."] == nil
+		then -- Not a zone we need, abort
 			self:Debug("Map ID not on the list of needed zones: " .. tostring(GetBestMapForUnit("player")))
 			return
 		end
@@ -747,7 +787,9 @@ function R:CheckNpcInterest(guid, zone, subzone, zone_t, subzone_t, curSpell, re
 	-- If the loot is not from an NPC (could be from yourself or a world object), we don't want to process this
 	local unitType, _, _, _, _, mob_id = strsplit("-", guid)
 	if unitType ~= "Creature" and unitType ~= "Vehicle" then
-		self:Debug("This loot isn't from an NPC; disregarding. Loot source identified as unit type: " .. (unitType or "nil"))
+		self:Debug(
+			"This loot isn't from an NPC; disregarding. Loot source identified as unit type: " .. (unitType or "nil")
+		)
 		return
 	end
 
@@ -764,7 +806,10 @@ function R:CheckNpcInterest(guid, zone, subzone, zone_t, subzone_t, curSpell, re
 						-- Don't increment attempts for unique items if you already have the item in your bags
 						if not (v.unique == true and (Rarity.bagitems[v.itemId] or 0) > 0) then
 							-- Don't increment attempts for non-pickpocketed items if this item isn't being pickpocketed
-							if (requiresPickpocket and v.pickpocket) or (requiresPickpocket == false and not v.pickpocket) then
+							if
+								(requiresPickpocket and v.pickpocket)
+								or (requiresPickpocket == false and not v.pickpocket)
+							then
 								if v.attempts == nil then
 									v.attempts = 1
 								else
@@ -791,8 +836,17 @@ function R:CheckNpcInterest(guid, zone, subzone, zone_t, subzone_t, curSpell, re
 								if tonumber(vvv) ~= nil and tonumber(vvv) == GetBestMapForUnit("player") then
 									found = true
 								end
-								if vvv == zone or vvv == lbz[zone] or vvv == subzone or vvv == lbsz[subzone] or vvv == zone_t or vvv ==
-										subzone_t or vvv == lbz[zone_t] or vvv == subzone or vvv == lbsz[subzone_t] then
+								if
+									vvv == zone
+									or vvv == lbz[zone]
+									or vvv == subzone
+									or vvv == lbsz[subzone]
+									or vvv == zone_t
+									or vvv == subzone_t
+									or vvv == lbz[zone_t]
+									or vvv == subzone
+									or vvv == lbsz[subzone_t]
+								then
 									found = true
 								end
 							end

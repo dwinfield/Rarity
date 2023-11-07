@@ -2,7 +2,10 @@ local _, addonTable = ...
 
 --- Session.lua
 -- TODO: LuaDoc
-local Session = {}
+local Session = {
+	lockDurationInSeconds = 1, -- Should be configurable for easier debugging
+	isLocked = false,
+}
 
 -- Globals
 local R = Rarity
@@ -18,7 +21,6 @@ local C_Timer = C_Timer
 local inSession = false
 local sessionStarted = 0
 local sessionLast = 0
-local isSessionLocked = false
 local sessionTimer
 
 -- Constants
@@ -64,8 +66,8 @@ function Session:End()
 		local trackedItem2 = Rarity.Tracking:GetTrackedItem(2)
 
 		if trackedItem and trackedItem.itemId then
-			local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc,
-			      itemTexture, itemSellPrice = GetItemInfo(trackedItem.itemId)
+			local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice =
+				GetItemInfo(trackedItem.itemId)
 			local len = sessionLast - sessionStarted
 			local i = Rarity.Tracking:FindTrackedItem()
 			if i then
@@ -83,11 +85,15 @@ function Session:End()
 				end
 				i.session.time = (i.session.time or 0) + len
 			end
-			self:Debug("Ending session for %s (%s)", itemLink or "ITEM_LINK_UNAVAILABLE", FormatTime(trackedItem.time or 0))
+			self:Debug(
+				"Ending session for %s (%s)",
+				itemLink or "ITEM_LINK_UNAVAILABLE",
+				FormatTime(trackedItem.time or 0)
+			)
 		end
 		if trackedItem2 and trackedItem2.itemId then
-			local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc,
-			      itemTexture, itemSellPrice = GetItemInfo(trackedItem2.itemId)
+			local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice =
+				GetItemInfo(trackedItem2.itemId)
 			local len = sessionLast - sessionStarted
 			local i = trackedItem2
 			if i then
@@ -105,8 +111,11 @@ function Session:End()
 				end
 				i.session.time = (i.session.time or 0) + len
 			end
-			self:Debug("Also ending session for %s (%s)", itemLink or "ITEM_LINK_UNAVAILABLE",
-			           FormatTime(trackedItem2.time or 0))
+			self:Debug(
+				"Also ending session for %s (%s)",
+				itemLink or "ITEM_LINK_UNAVAILABLE",
+				FormatTime(trackedItem2.time or 0)
+			)
 		end
 	end
 	inSession = false
@@ -141,22 +150,24 @@ function Session:Update()
 end
 
 function Session:IsLocked()
-	return isSessionLocked
+	return self.isLocked
 end
 
 function Session.Unlock()
 	Rarity:Debug("Unlocking session to continue scanning for new LOOT_READY events")
-	isSessionLocked = false
+	Session.isLocked = false
 end
 
-function Session:Lock(delay)
-	delay = delay or 1 -- 1 second seems to be a suitable default value (as both events fire within 0.5-0.8s of each other)
+function Session:Lock(lockDurationInSeconds)
+	lockDurationInSeconds = lockDurationInSeconds or self.lockDurationInSeconds
 
-	-- Lock the current session (and set the timer to unlock it again)
-	Rarity:Debug("Locking session for " .. tostring(delay) ..
-			             " second(s) to prevent duplicate attempts from being counted")
-	isSessionLocked = true
-	C_Timer.After(delay, self.Unlock) -- Unlock via timer
+	Rarity:Debug(
+		"Locking session for "
+			.. tostring(lockDurationInSeconds)
+			.. " second(s) to prevent duplicate attempts from being counted"
+	)
+	self.isLocked = true
+	C_Timer.After(lockDurationInSeconds, self.Unlock)
 end
 
 Rarity.Session = Session

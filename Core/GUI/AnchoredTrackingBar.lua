@@ -65,8 +65,13 @@ function GUI:UpdateBar()
 	self.barGroup:SetColorAt(0.33, 0, 1, 1, 1)
 	self.barGroup:SetColorAt(0.00, 0, 0, 1, 1)
 	self.barGroup:ClearAllPoints()
-	self.barGroup:SetPoint(self.db.profile.bar.point, UIParent, self.db.profile.bar.relativePoint, self.db.profile.bar.x,
-	                       self.db.profile.bar.y)
+	self.barGroup:SetPoint(
+		self.db.profile.bar.point,
+		UIParent,
+		self.db.profile.bar.relativePoint,
+		self.db.profile.bar.x,
+		self.db.profile.bar.y
+	)
 	self.barGroup:SetScale(self.db.profile.bar.scale)
 	self.barGroup:SetWidth(self.db.profile.bar.width)
 	self.barGroup:SetHeight(self.db.profile.bar.height)
@@ -85,4 +90,10 @@ function GUI:UpdateBar()
 	else
 		self.barGroup:Lock()
 	end
+end
+
+function GUI:ToggleProgressBar()
+	Rarity.db.profile.bar.visible = not Rarity.db.profile.bar.visible
+	Rarity.GUI:UpdateBar()
+	Rarity.GUI:UpdateText()
 end

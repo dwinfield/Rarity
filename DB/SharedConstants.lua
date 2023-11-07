@@ -8,13 +8,13 @@ addonTable.constants = addonTable.constants or {}
 local C = addonTable.constants
 
 -- Types of items
-C.TOOLTIP = { ACTIVATION_METHOD_HOVER = "ACTIVATION_METHOD_HOVER",
-              ACTIVATION_METHOD_CLICK = "ACTIVATION_METHOD_CLICK" }
+C.TOOLTIP = { ACTIVATION_METHOD_HOVER = "ACTIVATION_METHOD_HOVER", ACTIVATION_METHOD_CLICK = "ACTIVATION_METHOD_CLICK" }
 
 -- Misc. stuff for the detailed lockout storage / defeat detection
 C.DEFEAT_DETECTION = { MODE_OR = 1, MODE_AND = 2 }
 
 -- Embedded mapIDs: It's best to avoid hardcoding these in case of yet another re-mapping on Blizzard's end...
+-- See https://wowpedia.fandom.com/wiki/UiMapID (list may not always be up-to-date)
 C.UIMAPIDS = {
 	-- Dummy Zone (For items that can be obtained anywhere.)
 	NONE = 0,
@@ -45,8 +45,10 @@ C.UIMAPIDS = {
 	KUNLAI_SUMMIT = 379,
 	TOWNLONG_STEPPES = 388,
 	VALE_OF_ETERNAL_BLOSSOMS_MOP = 390,
+	DARKMOON_ISLAND = 407,
 	KRASARANG_WILDS = 418,
 	DREAD_WASTES = 422,
+	ISLE_OF_THUNDER = 504,
 	-- Warlords of Draenor Zones
 	FROSTFIRE_RIDGE = 525,
 	NAGRAND_DRAENOR = 550,
@@ -59,9 +61,11 @@ C.UIMAPIDS = {
 	HIGHMOUNTAIN = 650,
 	SURAMAR = 680,
 	SKYHOLD = 695,
+	THE_NIGHTHOLD = 772,
 	KROKUUN = 830,
 	MACAREE = 882,
 	ANTORAN_WASTES = 885,
+	ANTORUS = 910,
 	-- Legion Instances
 	SEAT_OF_THE_TRIUMVIRATE = 903,
 	-- Battle for Azeroth Zones
@@ -106,6 +110,17 @@ C.UIMAPIDS = {
 	TAZAVESH_THE_VEILED_MARKET = 1989,
 	SANCTUM_OF_DOMINATION = 1998,
 	ZERETH_MORTIS = 1970,
+	SEPULCHER_OF_THE_FIRST_ONES = 2047,
+	-- Dragonflight Zones
+	THE_WAKING_SHORES = 2022,
+	OHN_AHRAN_PLAINS = 2023,
+	THE_AZURE_SPAN = 2024,
+	THALDRASZUS = 2025,
+	THE_PRIMALIST_FUTURE = 2085,
+	THE_FORBIDDEN_REACH = 2151,
+	ZARALEK_CAVERN = 2133,
+	THE_THROUGHWAY = 2165,
+	CROSSROADS_OF_FATE = 2194, -- Dawn of the Infinite (subzone)
 }
 
 -- Types of items
@@ -136,6 +151,7 @@ C.ITEM_CATEGORIES = {
 	LEGION = "LEGION",
 	BFA = "BFA",
 	SHADOWLANDS = "SHADOWLANDS",
+	DRAGONFLIGHT = "DRAGONFLIGHT",
 	HOLIDAY = "HOLIDAY",
 }
 
@@ -173,21 +189,49 @@ C.SORT_METHODS = {
 
 C.COVENANT_IDS = { KYRIAN = 1, VENTHYR = 2, NIGHT_FAE = 3, NECROLORD = 4 }
 
+-- These are now obsolete, but still used for items. TBD: Can move over to a different format or will it break things?
 C.HOLIDAY_TEXTURES = {
 	WINTERS_VEIL = "Calendar_WinterVeil",
 	DARKMOON_FAIRE = "calendar_darkmoonfaireterokkar",
-	DAY_OF_THE_DEAD = "Calendar_DayOfTheDead",
 	BREWFEST = "Calendar_Brewfest",
 	HALLOWS_END = "Calendar_HallowsEnd",
 	PILGRIMS_BOUNTY = "Calendar_HarvestFestival",
-	WOW_ANNIVERSARY = "calendar_anniversary",
 	LOVE_IS_IN_THE_AIR = "Calendar_LoveInTheAir",
-	LUNAR_FESTIVAL = "Calendar_LunarFestival",
-	NOBLEGARDEN = "Calendar_Noblegarden",
-	CHILDRENS_WEEK = "Calendar_ChildrensWeek",
 	MIDSUMMER_FESTIVAL = "Calendar_Midsummer",
-	FIREWORKS = "calendar_fireworks", -- What is this used for?
-	PIRATES_DAY = "Calendar_PiratesDay",
+}
+
+-- Copied from https://www.townlong-yak.com/framexml/live/Helix/ArtTextureID.lua
+C.ART_TEXTURES = {
+	BREWFEST = 235439,
+	BREWFEST_END = 235440,
+	BREWFEST_ONGOING = 235441,
+	BREWFEST_START = 235442,
+	DMF_ELWYNN_END = 235446,
+	DMF_ELWYNN_ONGOING = 235447,
+	DMF_ELWYNN_START = 235448,
+	DMF_MULGORE_END = 235449,
+	DMF_MULGORE_ONGOING = 235450,
+	DMF_MULGORE_START = 235451,
+	DMF_ONGOING = 235452,
+	DMF_TEROKKAR_END = 235453,
+	DMF_TEROKKAR_ONGOING = 235454,
+	DMF_TEROKKAR_START = 235455,
+	HALLOWS_END = 235460,
+	HALLOWS_ONGOING = 235461,
+	HALLOWS_START = 235462,
+	HARVEST_END = 235463,
+	HARVEST_ONGOING = 235464,
+	HARVEST_START = 235465,
+	LOVE_END = 235466,
+	LOVE_ONGOING = 235467,
+	LOVE_START = 235468,
+	MIDSUMMER_END = 235472,
+	MIDSUMMER_ONGOING = 235473,
+	MIDSUMMER_START = 235474,
+	WINTERVEIL_END = 235482,
+	WINTERVEIL_IEND = 235483,
+	WINTERVEIL_ONGOING = 235484,
+	WINTERVEIL_START = 235485,
 }
 
 C.ARCHAEOLOGY_RACES = {
@@ -213,6 +257,65 @@ C.ARCHAEOLOGY_RACES = {
 	DWARF = 20,
 }
 
+C.FACTION_IDS = {
+	-- Dragonflight
+	MARUUK_CENTAUR = 2503,
+	DRAGONSCALE_EXPEDITION = 2507,
+	VALDRAKKEN_ACCORD = 2510,
+	ISKAARA_TUSKARR = 2511,
+}
+
+C.LFG_DUNGEON_IDS = {
+	SKOLDUS_HALL_LAYER_9 = 2197,
+	SKOLDUS_HALL_LAYER_10 = 2198,
+	SKOLDUS_HALL_LAYER_11 = 2199,
+	SKOLDUS_HALL_LAYER_12 = 2200,
+	SKOLDUS_HALL_LAYER_13 = 2295,
+	SKOLDUS_HALL_LAYER_14 = 2296,
+	SKOLDUS_HALL_LAYER_15 = 2297,
+	SKOLDUS_HALL_LAYER_16 = 2298,
+	FRACTURE_CHAMBERS_LAYER_9 = 2201,
+	FRACTURE_CHAMBERS_LAYER_10 = 2202,
+	FRACTURE_CHAMBERS_LAYER_11 = 2203,
+	FRACTURE_CHAMBERS_LAYER_12 = 2204,
+	FRACTURE_CHAMBERS_LAYER_13 = 2299,
+	FRACTURE_CHAMBERS_LAYER_14 = 2300,
+	FRACTURE_CHAMBERS_LAYER_15 = 2301,
+	FRACTURE_CHAMBERS_LAYER_16 = 2302,
+	THE_SOULFORGES_LAYER_9 = 2205,
+	THE_SOULFORGES_LAYER_10 = 2206,
+	THE_SOULFORGES_LAYER_11 = 2207,
+	THE_SOULFORGES_LAYER_12 = 2208,
+	THE_SOULFORGES_LAYER_13 = 2303,
+	THE_SOULFORGES_LAYER_14 = 2304,
+	THE_SOULFORGES_LAYER_15 = 2305,
+	THE_SOULFORGES_LAYER_16 = 2306,
+	COLDHEART_INTERSTITIA_LAYER_9 = 2209,
+	COLDHEART_INTERSTITIA_LAYER_10 = 2210,
+	COLDHEART_INTERSTITIA_LAYER_11 = 2211,
+	COLDHEART_INTERSTITIA_LAYER_12 = 2212,
+	COLDHEART_INTERSTITIA_LAYER_13 = 2307,
+	COLDHEART_INTERSTITIA_LAYER_14 = 2308,
+	COLDHEART_INTERSTITIA_LAYER_15 = 2309,
+	COLDHEART_INTERSTITIA_LAYER_16 = 2310,
+	MORTREGAR_LAYER_9 = 2213,
+	MORTREGAR_LAYER_10 = 2214,
+	MORTREGAR_LAYER_11 = 2215,
+	MORTREGAR_LAYER_12 = 2216,
+	MORTREGAR_LAYER_13 = 2311,
+	MORTREGAR_LAYER_14 = 2312,
+	MORTREGAR_LAYER_15 = 2313,
+	MORTREGAR_LAYER_16 = 2314,
+	THE_UPPER_REACHES_LAYER_9 = 2217,
+	THE_UPPER_REACHES_LAYER_10 = 2218,
+	THE_UPPER_REACHES_LAYER_11 = 2219,
+	THE_UPPER_REACHES_LAYER_12 = 2220,
+	THE_UPPER_REACHES_LAYER_13 = 2315,
+	THE_UPPER_REACHES_LAYER_14 = 2316,
+	THE_UPPER_REACHES_LAYER_15 = 2317,
+	THE_UPPER_REACHES_LAYER_16 = 2318,
+}
+
 -- This doesn't really belong here and needs streamlining anyway, but for now this is the best place.
 -- Tooltip Filters (Note: Currently, this system is merely a stub. but more (and custom) filters may be added in the future)
 -- These are used to decide whether the tooltip should be extended to display information about an CONSTANTS.ITEM_TYPES.ITEM for the NPCs listed in its tooltipNpcs table. Useful if we want to draw attention to an CONSTANTS.ITEM_TYPES.ITEM, but not every player can obtain it
@@ -221,8 +324,8 @@ C.TOOLTIP_FILTERS = {
 	IS_SPELL_KNOWN = IsSpellKnown,
 	IS_PLAYER_IN_LFR = function()
 		-- Returns true if the player is in a LFR instance
-		local name, type, difficulty, difficultyName, maxPlayers, playerDifficulty, isDynamicInstance, mapID,
-		      instanceGroupSize = GetInstanceInfo()
+		local name, type, difficulty, difficultyName, maxPlayers, playerDifficulty, isDynamicInstance, mapID, instanceGroupSize =
+			GetInstanceInfo()
 		return (difficulty == 7 or difficulty == 17) -- Legacy or regular LFR
 	end,
 }
@@ -232,8 +335,12 @@ C.TOOLTIP_FILTERS = {
 C.TOOLTIP_ACTIONS = {
 	OVERRIDE_TOOLTIP_NPCS = function(entry, newTooltipNpcs) -- Overwrites all tooltip NPCs
 		-- Sanity checks
-		if not (entry and type(entry) == "table" and newTooltipNpcs and type(newTooltipNpcs) == "number" or
-				type(newTooltipNpcs) == "table") then
+		if
+			not (
+				entry and type(entry) == "table" and newTooltipNpcs and type(newTooltipNpcs) == "number"
+				or type(newTooltipNpcs) == "table"
+			)
+		then
 			Rarity:Debug("Action OVERRIDE_TOOLTIP_NPCS failed! Required parameters: entry, newTooltipNpcs")
 			return
 		end
@@ -260,3 +367,4 @@ addonTable.constants = C
 
 -- More consistent with Blizzard's method as of Shadowlands (global Enum table); it's probably easier to use, as well
 Rarity.Enum = C
+return C

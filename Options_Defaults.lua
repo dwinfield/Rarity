@@ -62,6 +62,7 @@ R.catIcons = {
 	[CONSTANTS.ITEM_CATEGORIES.LEGION] = "legion",
 	[CONSTANTS.ITEM_CATEGORIES.BFA] = "bfa",
 	[CONSTANTS.ITEM_CATEGORIES.SHADOWLANDS] = "shadowlands",
+	[CONSTANTS.ITEM_CATEGORIES.DRAGONFLIGHT] = "dragonflight",
 }
 
 function R:PrepareDefaults()
@@ -130,6 +131,7 @@ function R:PrepareDefaults()
 				[CONSTANTS.ITEM_CATEGORIES.HOLIDAY] = true,
 				[CONSTANTS.ITEM_CATEGORIES.BFA] = true,
 				[CONSTANTS.ITEM_CATEGORIES.SHADOWLANDS] = true,
+				[CONSTANTS.ITEM_CATEGORIES.DRAGONFLIGHT] = true,
 			},
 			collectionType = {
 				[CONSTANTS.ITEM_TYPES.MOUNT] = true,
@@ -176,6 +178,12 @@ function R:PrepareDefaults()
 				14310, -- Adventurer of Revendreth
 				14744, -- Better to Be Lucky Than Dead (The Maw)
 
+				-- Dragonflight
+				16676, -- Adventurer of The Waking Shores
+				16677, -- Adventurer of the Ohn'ahran Plains
+				16678, -- Adventurer of The Azure Span
+				16679, -- Adventurer of Thaldraszus
+				17525, -- Champion of the Forbidden Reach
 			},
 			-- These are inventory items that may result in another CONSTANTS.ITEM_TYPES.ITEM that Rarity would like to make you aware of
 			extraTooltips = {
@@ -534,4 +542,5 @@ end
 			**- Add a new category icon for the expansion
 			**- If a new class was added, add it to the list at the top of Options.lua in the Options module
 
-]] --
+]]
+--
