@@ -4,3 +4,9 @@ Libs/
 *.suo
 *.json
 *.sqlite
+
+
+
+# JetBrains IDE
+.idea/
+*.iml
